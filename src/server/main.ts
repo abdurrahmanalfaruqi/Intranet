@@ -2,9 +2,21 @@ import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer, type ServerResponse } from "node:http";
 import { extname, resolve, sep } from "node:path";
 
-const root = resolve(__dirname, "..");
-const assetsRoot = resolve(root, "public", "assets");
+const root = resolve(__dirname, "../..");
+const siteRoot = resolve(__dirname, "../public");
+const assetsRoot = resolve(siteRoot, "assets");
 const envPath = resolve(root, ".env");
+const pageRoutes = new Set([
+  "/",
+  "/index.html",
+  "/berita",
+  "/outlet",
+  "/sop",
+  "/informasi-hr",
+  "/corporate-action",
+  "/struktur-organisasi",
+  "/dokumen-form",
+]);
 
 // Keep the simple HOST/PORT .env file usable without a runtime dependency.
 if (existsSync(envPath)) {
@@ -14,7 +26,8 @@ if (existsSync(envPath)) {
     const separator = value.indexOf("=");
     if (separator < 1) continue;
     const key = value.slice(0, separator).trim();
-    if (process.env[key] === undefined) process.env[key] = value.slice(separator + 1).trim();
+    if (process.env[key] === undefined)
+      process.env[key] = value.slice(separator + 1).trim();
   }
 }
 
@@ -39,11 +52,19 @@ const mimeTypes: Record<string, string> = {
 };
 
 function reply(response: ServerResponse, status: number, body: string): void {
-  response.writeHead(status, { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff" });
+  response.writeHead(status, {
+    "content-type": "text/plain; charset=utf-8",
+    "x-content-type-options": "nosniff",
+  });
   response.end(body);
 }
 
-function serveFile(response: ServerResponse, filePath: string, contentType: string, method: string): void {
+function serveFile(
+  response: ServerResponse,
+  filePath: string,
+  contentType: string,
+  method: string,
+): void {
   try {
     const info = statSync(filePath);
     if (!info.isFile()) return reply(response, 404, "Not Found");
@@ -57,7 +78,9 @@ function serveFile(response: ServerResponse, filePath: string, contentType: stri
       response.end();
       return;
     }
-    createReadStream(filePath).on("error", () => response.destroy()).pipe(response);
+    createReadStream(filePath)
+      .on("error", () => response.destroy())
+      .pipe(response);
   } catch {
     reply(response, 404, "Not Found");
   }
@@ -77,13 +100,25 @@ const server = createServer((request, response) => {
     return reply(response, 400, "Bad Request");
   }
 
-  if (pathname === "/" || pathname === "/index.html") {
-    return serveFile(response, resolve(root, "index.html"), "text/html; charset=utf-8", method);
+  if (
+    pageRoutes.has(pathname) ||
+    /^\/berita\/\d+$/.test(pathname) ||
+    /^\/sop\/[^/]+$/.test(pathname)
+  ) {
+    return serveFile(
+      response,
+      resolve(siteRoot, "index.html"),
+      "text/html; charset=utf-8",
+      method,
+    );
   }
 
   if (pathname === "/health") {
     const body = JSON.stringify({ status: "ok", service: "intranet-orins" });
-    response.writeHead(200, { "content-type": "application/json; charset=utf-8", "content-length": Buffer.byteLength(body) });
+    response.writeHead(200, {
+      "content-type": "application/json; charset=utf-8",
+      "content-length": Buffer.byteLength(body),
+    });
     return response.end(method === "HEAD" ? undefined : body);
   }
 
@@ -95,7 +130,8 @@ const server = createServer((request, response) => {
       return reply(response, 400, "Bad Request");
     }
     const filePath = resolve(assetsRoot, relativePath);
-    if (!filePath.startsWith(`${assetsRoot}${sep}`)) return reply(response, 403, "Forbidden");
+    if (!filePath.startsWith(`${assetsRoot}${sep}`))
+      return reply(response, 403, "Forbidden");
     const contentType = mimeTypes[extname(filePath).toLowerCase()];
     if (!contentType) return reply(response, 404, "Not Found");
     return serveFile(response, filePath, contentType, method);
@@ -105,7 +141,13 @@ const server = createServer((request, response) => {
 });
 
 server.on("error", (error: NodeJS.ErrnoException) => {
-  console.error(error.code === "EADDRINUSE" ? `Port ${port} sudah dipakai.` : error.message);
+  console.error(
+    error.code === "EADDRINUSE" ? `Port ${port} sudah dipakai.` : error.message,
+  );
   process.exitCode = 1;
 });
-server.listen(port, host, () => console.log(`Orins Intranet siap: http://localhost:${port} (bind ${host}:${port})`));
+server.listen(port, host, () =>
+  console.log(
+    `Orins Intranet siap: http://localhost:${port} (bind ${host}:${port})`,
+  ),
+);

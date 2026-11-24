@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "npm run build && npm start",
-    "build": "tsc",
-    "start": "node dist/main.js",
-    "typecheck": "tsc --noEmit"
+    "build": "tsc && node scripts/build-client.mjs",
+    "start": "node dist/server/main.js",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write index.html \"src/server/**/*.ts\" \"src/client/css/**/*.css\" \"src/client/js/**/*.js\" \"scripts/**/*.mjs\"",
+    "format:check": "prettier --check index.html \"src/server/**/*.ts\" \"src/client/css/**/*.css\" \"src/client/js/**/*.js\" \"scripts/**/*.mjs\""
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "prettier": "^3.10.1",
     "typescript": "^5.9.3"
   }
 }
