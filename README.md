@@ -1,47 +1,20 @@
-# Orins Intranet — Bun + TypeScript
+# Orins Intranet — Node.js + TypeScript
 
-Aplikasi monolitik sederhana: satu project dan satu proses Bun untuk menyajikan halaman intranet serta endpoint health-check. HTML sumber dipertahankan agar tampilan dan interaksi yang sudah ada tidak berubah. File sumber saat ini belum memakai database atau API eksternal.
+Satu aplikasi monolitik tanpa Bun atau Docker. HTML asli tetap menjadi halaman utama di `index.html`; server TypeScript ada di `src/main.ts`. Aset publik ditempatkan di `public/assets/`.
 
-## Struktur project
+## Jalankan di Windows PowerShell
 
-```text
-intranet-orins-bun-ts/
-├── public/
-│   └── assets/          # Gambar, ikon, dan font publik
-├── src/
-│   ├── assets/           # Source asset/CSS (bila nanti dipisahkan dari HTML)
-│   ├── components/      # Komponen UI reusable
-│   ├── pages/
-│   │   └── home.ts      # Menyajikan halaman intranet
-│   ├── services/
-│   │   ├── health.ts    # Health-check aplikasi
-│   │   └── static-assets.ts # Aset statis
-│   ├── utils/
-│   │   └── config.ts    # Konfigurasi HOST dan PORT
-│   ├── app.ts           # Route aplikasi
-│   └── main.ts          # Entry point
-├── index.html           # Halaman utama dari file sumber
-├── .env.example         # Contoh konfigurasi lingkungan
-├── .gitignore
-├── bun.lock             # Lockfile dependency Bun
-├── package.json
-├── tsconfig.json
-└── README.md
+Pastikan `node --version` dan `npm --version` menampilkan versi. Di server kantor, setelah project versi Node disalin ke `C:\Intranet`:
+
+```powershell
+cd C:\Intranet
+npm install
+npm run build
+npm start
 ```
 
-Folder `src/components/` disiapkan untuk komponen UI reusable; karena halaman sumber masih satu HTML utuh, belum ada logika tampilan yang dipindahkan ke file komponen. Ini tetap satu aplikasi monolitik, bukan beberapa service.
+Buka `http://localhost:3001` dari server. Untuk komputer lain gunakan IP/nama server dan pastikan akses port diizinkan tim IT. `HOST` dan `PORT` dapat diatur melalui `.env` atau environment PowerShell. Endpoint kesehatan: `/health`.
 
-## Menjalankan di komputer
+Perintah `npm run dev` juga membangun lalu menjalankan aplikasi, tetapi tidak melakukan auto-reload. Terminal harus tetap terbuka selama server berjalan; untuk layanan 24 jam perlu Windows Service atau pengaturan startup oleh tim IT.
 
-1. Pasang Bun dari situs resminya.
-2. Buka terminal di folder project.
-3. Jalankan `bun install`.
-4. Salin `.env.example` menjadi `.env` bila ingin mengubah host atau port.
-5. Jalankan `bun run dev`.
-6. Buka `http://localhost:3000`.
-
-Untuk menjalankan tanpa mode watch, gunakan `bun run start`. Endpoint `GET /health` mengembalikan status aplikasi.
-
-## Menjalankan di server
-
-Pasang Bun di satu server, salin folder project, lalu jalankan `bun install --production`. Atur `HOST` dan `PORT` di environment server, kemudian jalankan `bun run start`. Untuk akses publik, arahkan reverse proxy perusahaan ke port aplikasi dan aktifkan HTTPS di reverse proxy tersebut. Tidak ada Docker atau service terpisah.
+`dist/` adalah hasil kompilasi TypeScript. Runtime hasil build hanya memerlukan Node.js, sedangkan `npm install` diperlukan saat ingin membangun ulang source.
