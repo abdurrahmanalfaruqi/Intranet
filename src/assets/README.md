@@ -1,0 +1,1 @@
+Folder ini untuk aset yang menjadi bagian source aplikasi, misalnya CSS global atau ikon yang akan diproses bersama source. HTML yang diberikan masih menyimpan CSS dan JavaScript secara inline, jadi file asli dipertahankan tanpa pemisahan.
