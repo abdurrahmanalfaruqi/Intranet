@@ -47,4 +47,4 @@ Berita contoh saat ini berada di `src/client/js/data/news.js`. Taruh gambar di `
 
 ## Pemeriksaan sebelum selesai
 
-Jalankan `npm run format:check`, `npm run typecheck`, dan `npm run build`. Untuk route atau asset, jalankan server hasil build dan periksa URL melalui browser atau HTTP. `npm run dev` saat ini melakukan build lalu start, belum auto-reload. Jangan menyatakan fitur selesai hanya karena file berhasil disimpan.
+Jalankan `npm run format:check`, `npm run typecheck`, dan `npm run build`. Untuk route atau asset, jalankan server hasil build dan periksa URL melalui browser atau HTTP. Saat development lokal, `npm run dev` memantau source, membangun ulang otomatis, dan me-restart server; browser tetap perlu di-refresh setelah pesan build selesai. Jangan menyatakan fitur selesai hanya karena file berhasil disimpan.

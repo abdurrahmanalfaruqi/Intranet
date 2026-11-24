@@ -20,6 +20,7 @@ Intranet/
 │   │       └── app.js            # Route, pencarian, inisialisasi
 │   └── server/main.ts            # HTTP server dan fallback URL
 ├── scripts/build-client.mjs      # Salin client ke dist/public
+├── scripts/dev.mjs               # Pantau source dan build otomatis saat development
 ├── dist/                         # Output build; jangan diedit langsung
 ├── package.json
 └── tsconfig.json
@@ -38,7 +39,9 @@ npm start
 
 Server default di port 3001. Buka `http://localhost:3001` di server atau `http://NAMA-ATAU-IP-SERVER:3001` dari perangkat lain jika firewall mengizinkan. `/health` untuk pemeriksaan server.
 
-Setelah mengubah file di `src/client/`, `public/assets/images/`, atau `index.html`, jalankan `npm run build` dan refresh browser. Setelah mengubah `src/server/`, jalankan build lalu restart proses Node. `npm run dev` melakukan build lalu start, tetapi belum auto-reload. `npm run format` merapikan source; `npm run format:check` hanya memeriksa.
+Untuk development lokal, jalankan `npm run dev` sekali. Perubahan di `src/`, `public/`, `index.html`, atau `tsconfig.json` otomatis dibuild dan server di-restart. Tunggu pesan `Build selesai`, lalu refresh browser; mode ini belum melakukan auto-refresh browser. Jika port 3001 sedang dipakai, tetapkan port sebelum menjalankan: `$env:PORT = "3010"`. Hentikan dengan `Ctrl+C`.
+
+Untuk server kantor/production gunakan `npm run build` lalu `npm start`; mode `dev` bukan pengganti proses deploy. `npm run format` merapikan source; `npm run format:check` hanya memeriksa.
 
 GitHub tidak memuat `dist/` karena folder itu di-ignore. Di server hasil `git clone`/`git pull`, jalankan `npm install` dan `npm run build` sebelum `npm start`. ZIP rilis siap jalan sudah menyertakan `dist/`.
 
